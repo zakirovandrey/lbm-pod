@@ -114,6 +114,41 @@ double constexpr sqrtNewtonRaphson(double x, double curr, double prev) {
 double constexpr sqrtNR(double x) {
   return x >= 0 && x < std::numeric_limits<double>::infinity() ? sqrtNewtonRaphson(x, x, 0) : std::numeric_limits<double>::quiet_NaN();
 }
+//--------- Also see Sprout library https://github.com/bolero-MURAKAMI/Sprout/
+//----- To use it uncomment the flag 
+//              #define SPROUT_CONFIG_DISABLE_BUILTIN_CMATH_FUNCTION
+//------ in the file ./Sprout/sprout/config/user_config.hpp
+#include <sprout/math.hpp>
+
+double constexpr cbrtCR(double x) {
+  return sprout::math::cbrt(x);
+}
+/*double constexpr expCR(double x) {
+return 0;
+}
+double constexpr cbrtCR(double x) {
+  return powCR(x, 1./3.);
+}
+double constexpr powCR(double x, double y) {
+  return expCR(y*logCR(x));
+}*/
+
+template <int A, int B> struct get_power {
+    static const int value = A * get_power<A, B - 1>::value;
+};
+template <int A> struct get_power<A, 0> { static const int value = 1; };
+
+template<int n, class Prog> struct TemplateSwitcher;
+template<class Prog > struct TemplateSwitcher<-2,Prog >;
+template<template<int> class Prog > struct TemplateSwitcher<-2,Prog<-2> > {
+  static void run(int v){ assert(0); }
+};
+template<int n, template<int> class Prog> struct TemplateSwitcher<n, Prog<n> > {
+  static void run(int v) {
+    if(v==n) Prog<n>::run();
+    else     TemplateSwitcher<n-1, Prog<n-1> >::run(v);
+  }
+};
 
 class cuTimer {
   cudaEvent_t tstart,tend,tlap;

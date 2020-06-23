@@ -5,10 +5,10 @@ struct InterpolateStruct{
   __device__ __forceinline__ InterpolateStruct(ftype3 xf, int3 _sminpos): stencilMinPos(_sminpos) {
     shifts = xf - make_ftype3(stencilMinPos);
   }
-  template<class F> __device__ inline ftype calc(F);
+  template<class T,class F> __device__ inline T calc(F);
 };
 
-__global__ __launch_bounds__(LBMconsts::Qn) void  streaming_collision(int ibn) {
+template<int RegOrder=-1> __global__ __launch_bounds__(LBMconsts::Qn) void  streaming_collision(int ibn) {
   ibn+= blockIdx.x;
   if(ibn>=Nx*Ny*Nz) return;
 
@@ -45,24 +45,30 @@ __global__ __launch_bounds__(LBMconsts::Qn) void  streaming_collision(int ibn) {
   assert(0);
   }*/
 
-  MomentsMatrix* Mm;
+  MomentsMatrix* Mm,*Mm0;
   __shared__ MomentsMatrix _mmsh;
+  __shared__ MomentsMatrix _mmsh0;
   __shared__ MomentsMatrix* shMm;
+  __shared__ MomentsMatrix* shMm0;
 
   if(useSHmem4momMatrix) {
     Mm = &_mmsh;
+    Mm0 = &_mmsh0;
   } else {
     if(threadIdx.x==0) {
       shMm = (MomentsMatrix*)malloc(sizeof(MomentsMatrix));
+      shMm0 = (MomentsMatrix*)malloc(sizeof(MomentsMatrix));
       assert(shMm);
+      assert(shMm0);
     }
     __syncthreads();
     Mm=shMm;
+    Mm0=shMm0;
   }
 
   __shared__ Cell cell_new;
   int Niter=0;
-  while(Niter<10) {
+  while(Niter<100) {
     ftype T = cell.T;
     ftype rho=cell.rho;
     ftype3 vel = cell.vel;
@@ -71,8 +77,10 @@ __global__ __launch_bounds__(LBMconsts::Qn) void  streaming_collision(int ibn) {
 
     __syncthreads();
     Mm->init(gauge);
+    Mm0->init(make_ftype4(0,0,0,1));
     __syncthreads();
     Mm->inverse();
+    Mm0->inverse();
     __syncthreads();
 
     const int iq = threadIdx.x;
@@ -90,17 +98,51 @@ __global__ __launch_bounds__(LBMconsts::Qn) void  streaming_collision(int ibn) {
     InterpolateStruct interpolate(xf, interpStencilMinPos);
     //cell_new.f[iq] = pars.data.tiles[ild][interpStencilMinPos.x+interpStencilMinPos.y+interpStencilMinPos.z].f[iq];
 
-    cell_new.f[iq] = interpolate.calc( [&] __device__ (int index) {
+    if(RegOrder<0) {
+      cell_new.f[iq] = interpolate.calc<ftype>( [&] __device__ (int index) {
+        ftype mVec[Qn];
+
+        ftype4 igauge = pars.data.tiles[ild][index].uT[0];
+        igauge.w = sqrt(igauge.w/TLat);
+        calc_moments_vec( igauge, pars.data.tiles[ild][index].f, mVec );
+
+        /*ftype all_fi[Qn]; for(int ii=0;ii<Qn;ii++) all_fi[ii] = Mm->get_inv(iq,mVec);
+         calc_moments_vec( make_ftype4(0,0,0,1), all_fi, mVec );
+         for(int ii=0;ii<Qn;ii++) if(MomentsPower[ii].x+MomentsPower[ii].y+MomentsPower[ii].z>4) mVec[ii]=0;
+         const ftype fi_reg = Mm0->get_inv(iq,mVec);
+         return fi_reg;*/
+
+        const ftype fi = Mm->get_inv(iq, mVec);
+        return fi;
+        //return pars.data.tiles[ild][index].f[iq];
+      } );
+    } else {
+      TensorCoeffs<RegOrder> an = interpolate.calc< TensorCoeffs<RegOrder> >( [&] __device__ (int index) {
+        TensorCoeffs<RegOrder> an_p;
+      
+        ftype4 igauge = pars.data.tiles[ild][index].uT[0];
+        igauge.w = sqrt(igauge.w/TLat);
+      
+        calc_moments_tensors( igauge, pars.data.tiles[ild][index].f, an_p);
+        return an_p;
+      } );
+
+      TensorCoeffs<RegOrder> dn =  convertAtoD(an, gauge);
+      cell_new.f[iq] = eval_fi_Hermit(dn, iq);
+
+      /*ftype4 tmpgauge = pars.data.tiles[ild][174].uT[0];
+      tmpgauge.w = sqrt(tmpgauge.w/TLat);
       ftype mVec[Qn];
-      
-      ftype4 igauge = pars.data.tiles[ild][index].uT[0];
-      igauge.w = sqrt(igauge.w/TLat);
-      calc_moments_vec( igauge, pars.data.tiles[ild][index].f, mVec );
-      
-      const ftype fi = Mm->get_inv(iq, mVec);
-      return fi;
-      //return pars.data.tiles[ild][index].f[iq];
-    } );
+      calc_moments_vec( tmpgauge, pars.data.tiles[ild][174].f, mVec );
+      if(ix==174 && iq==0) printf("Niter=%d moments=(%g %g %g %g %g %g)\n     An=(%g %g %g %g %g %g)\n      Dn=(%g %g %g %g %g %g)\n", 
+                                    Niter, mVec[0],mVec[1],mVec[2],mVec[3],mVec[4],mVec[5],
+                                    an.k[0],an.k[1],an.k[2],an.k[3],an.k[4],an.k[5],
+                                    dn.k[0],dn.k[1],dn.k[2],dn.k[3],dn.k[4],dn.k[5]
+                             );*/
+
+
+
+    }
     __syncthreads();
     if(threadIdx.x==0) {
       ftype4 Vrho = make_ftype4(0,0,0,0);
@@ -143,9 +185,9 @@ __global__ __launch_bounds__(LBMconsts::Qn) void  streaming_collision(int ibn) {
 
 inline __device__ ftype LagrPol(int ix,int iy,int iz, const ftype3 shifts, const int N);
 
-template<class F> __device__ inline ftype InterpolateStruct::calc(F func) {
+template<class Interp_t, class F> __device__ inline Interp_t InterpolateStruct::calc(F func) {
   const int3 Nxyz = make_int3(Nx,Ny,Nz);
-  ftype val = 0;
+  Interp_t val(0);
   const int Npoints = PPdev.stencilInterpWidth+1;
   for(int xs=0; xs<Npoints; xs++) {
     for(int ys=0; ys<((DIM<2)?1:Npoints); ys++) {
@@ -153,7 +195,9 @@ template<class F> __device__ inline ftype InterpolateStruct::calc(F func) {
         const int3 crd = ( stencilMinPos+make_int3(xs,ys,zs)+Nxyz )%Nxyz;
         const int index = crd.x + crd.y*Nx + crd.z*Nx*Ny;
         const ftype coeff = LagrPol(xs,ys,zs, shifts, Npoints);
-        val+= coeff*func(index);
+        auto Tcoffsp = func(index);
+        Tcoffsp*= coeff;
+        val+= Tcoffsp;
       }
     }
   }

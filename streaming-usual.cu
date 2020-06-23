@@ -1,5 +1,5 @@
 
-__global__ __launch_bounds__(LBMconsts::Qn) void  streaming_collision(int ibn) {
+template<int RO=-1> __global__ __launch_bounds__(LBMconsts::Qn) void  streaming_collision(int ibn) {
   if(threadIdx.x!=0) return;
 
   /*const int ix = blockIdx.x*CUDAstep::Nb.x + threadIdx.x;

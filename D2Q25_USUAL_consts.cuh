@@ -19,7 +19,7 @@ constexpr ftype W0get(const ftype Tv) { return (3*Tv*Tv-(ec1d+ec2d)*Tv+ec1d*ec2d
 constexpr ftype W1get(const ftype Tv) { return Tv*(ec2d-3*Tv)/(2*ec1d*(ec2d-ec1d)); }
 constexpr ftype W2get(const ftype Tv) { return Tv*(ec1d-3*Tv)/(2*ec2d*(ec1d-ec2d)); }
 
-const ftype Tmin = 1./3.;
+const ftype Tmin = 1./15.;//1./3.;
 const ftype Tmax = 3.0;
 
 #define NON_ISOTHERMAL_RELAXATION

@@ -53,8 +53,28 @@ template<class F> __global__ void fill(F func){
   c.rho = rho;
   c.vel = vel;
   c.T = T;
+  for(int iq=0; iq<LBMconsts::Qn; iq++) {
+    if(c.f[iq]<=0) printf("Warning CELL (%4d %4d %4d): f[%d] is negative\n", ix,iy,iz, iq);
+  }
 
   pars.data.set_cell(c, 0, ix,iy,iz);
   pars.data.set_cell(c, 1, ix,iy,iz);
+
+  //using namespace LBMconsts;
+  //if(ix==0 && iy==0 && iz==0) printf("TLAT = %g W0123 = %g %g %g %g\n", TLat, W0get(TLat), W1get(TLat), W2get(TLat), W3get(TLat));
+
 }
 
+void PhysPars::setupUnits(){
+  RhoUnitConv = 1;
+  VelUnitConv = dt/dr;
+  ViscUnitConv = dt/(dr*dr);
+  const ftype ViscAtTUnitConv = 1./dt;
+  tau = 0.5+visc_atT*ViscAtTUnitConv;
+  dtau = 1/tau;
+  TempUnitConv = dt*dt/(dr*dr);
+  printf("Density Units Converstion Coeff = %g\n", RhoUnitConv);
+  printf("Velocity Units Converstion Coeff = %g\n", VelUnitConv);
+  printf("Temperature Units Converstion Coeff = %g\n", TempUnitConv);
+  printf("Tau relaxation = %g\n", tau);
+}

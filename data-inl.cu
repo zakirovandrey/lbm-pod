@@ -5,24 +5,42 @@ __host__ __device__ inline void Cell::calcEq(ftype feq[Qn], const ftype Rho, con
   if(rho==0) u = make_ftype3(0,0,0);
   ftype dT = dcs2;
   ftype Tcur = cs2;
+  const ftype T0=cs2;
   #ifdef NON_ISOTHERMAL_RELAXATION
   Tcur=Tempr;
   #endif
 
   const ftype dT2 = dT*dT;
+  const ftype dT4 = dT2*dT2;
   
   const ftype u2 = dot(u,u);
+  const ftype u4 = u2*u2;
   const int TERM1 = (EqOrder>=1);
   const int TERM2 = (EqOrder>=2);
+  #ifdef NON_ISOTHERMAL_RELAXATION
+  const int TERM3 = 1;//(EqOrder>=3);
+  const int TERM4 = 1;//(EqOrder>=4);
+  #else
+  const int TERM3 = 0;
+  const int TERM4 = 0;
+  #endif
   const ftype mxwU = 1 - TERM2*u2*0.5*dT;
   for(int i=0; i<Qn; i++) {
     ftype3 eidx = make_ftype3(e[i]);
+    const ftype ei2 = dot(eidx,eidx);
+    const ftype ei4 = ei2*ei2;
     const ftype eu =  dot(eidx,u);
     const ftype eu2 = eu*eu;
+    const ftype eu4 = eu2*eu2;
     ftype mxw  = mxwU +
                  TERM1*eu*dT +
                  TERM2*eu2*0.5*dT2 +
-                 TERM2*(Tcur-cs2)*0.5*dT*(dot(eidx,eidx)*dT-DIM);
+                 TERM2*(Tcur-T0)*0.5*dT*(ei2*dT-DIM)+
+                 TERM3*1./6.*eu*dT*( eu2*dT2-3*u2*dT + 3*(Tcur-T0)*dT*(ei2*dT-DIM-2) )+
+                 TERM4*1./24.*dT4*( eu4 + 3*T0*T0*u4 - 6*T0*eu2*u2 + 6*(Tcur-T0)*eu2*ei2 + 3*(Tcur-T0)*(Tcur-T0)*ei4
+                                    - 6*T0*(Tcur-T0)*(Tcur-T0)*(DIM+2)*ei2 + 3*T0*T0*(Tcur-T0)*(Tcur-T0)*DIM*(DIM+2)
+                                    - 6*T0*(Tcur-T0)*u2*ei2 - 6*T0*(Tcur-T0)*(DIM+4)*eu2 + 6*T0*T0*(Tcur-T0)*(DIM+2)*u2
+                                  );
     feq[i] = w[i]*rho*mxw;
   }
 }

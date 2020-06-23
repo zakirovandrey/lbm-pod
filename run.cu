@@ -29,6 +29,8 @@ void AllParamsHost::set(){
 
   if(PPhost.stencilFixed && PPhost.stencilInterpWidth%2) printf("Warning: stencil Width is Odd and stincil position is Fixed. Is it ok?\n");
 
+  PPhost.setupUnits();
+
   //if(Nx%(1<<MaxLevel)!=0) error(1,1,"Error: Nx must be dividable by %d\n", 1<<MaxLevel);
 }
 

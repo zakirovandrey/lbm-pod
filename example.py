@@ -3,8 +3,8 @@ from math import *
 import sys
 import os
 
-Nx=64
-Ny=64
+Nx=100
+Ny=100
 Nz=1
 FloatPrecision=2
 
@@ -19,11 +19,12 @@ print "Grid sizes: %d x %d x %d"%(Nx,Ny,Nz)
 G.PPhost.setDefault()
 G.PPhost.stencilInterpWidth=2;
 G.PPhost.stencilFixed=1;
+G.PPhost.RegOrder=4;
 
-G.PPhost.dx=2.0;
-G.PPhost.dy=2.0;
-G.PPhost.dz=2.0;
+G.PPhost.dr=1.0;
 G.PPhost.dt=1.0;
+
+G.PPhost.visc_atT=0.1;
 
 #SS = G.PP.src
 #SS.srcX, SS.srcY, SS.srcZ = center[0],center[1],center[2];

@@ -33,9 +33,13 @@ void calcStep(int REV=1){
   
   memset( TotMoments, 0, sizeof(TotMoments) );
   total_moments<<<dim3(Nx,Ny),Nz>>>(TotMoments); cudaDeviceSynchronize(); CHECK_ERROR( cudaGetLastError() );
-  printf("Total Moments: Mass %.15f Momentum( %12.f %.12f %.12f ), M2 %.12f\n", TotMoments[0], TotMoments[1], TotMoments[2], TotMoments[3], TotMoments[4] );
+  printf("Total Moments: Mass %.15f Momentum( %.12f %.12f %.12f ), M2 %.12f\n", TotMoments[0], TotMoments[1], TotMoments[2], TotMoments[3], TotMoments[4] );
 }
 
+template<int n> struct KerRunner {
+  static void run() { streaming_collision <n> <<<Nx*Ny*Nz,LBMconsts::Qn>>>(0); cudaDeviceSynchronize(); CHECK_ERROR( cudaGetLastError() ); }
+};
+ 
 void calcLBM(int it, std::vector<double>& timings){
   cuTimer t0; double new_time=0, prev_time=0;
 
@@ -48,9 +52,9 @@ void calcLBM(int it, std::vector<double>& timings){
     CHECK_ERROR( cudaDeviceSetLimit( cudaLimitMallocHeapSize, MaxBlocksPerSM*prop.multiProcessorCount*sizeof(MomentsMatrix) ) );
   }
 
-  using namespace CUDAstep;
-  streaming_collision<<<Nx*Ny*Nz,LBMconsts::Qn>>>(0); cudaDeviceSynchronize(); CHECK_ERROR( cudaGetLastError() );
+  TemplateSwitcher<5, KerRunner<5> >::run( PPhost.RegOrder );
   //streaming_collision<<<Nx*Ny*Nz,1>>>(0); cudaDeviceSynchronize(); CHECK_ERROR( cudaGetLastError() );
+  //using namespace CUDAstep;
   /*for(int ibn=0; ibn<Nx*Ny*Nz; ibn+= MaxBlocksPerSM*prop.multiProcessorCount) {
     printf("step %5d progress = %6d/%6d\r", it, ibn, Nx*Ny*Nz); fflush(stdout);
     streaming_collision<<<MaxBlocksPerSM*prop.multiProcessorCount,1>>>(ibn);

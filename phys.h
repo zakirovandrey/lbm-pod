@@ -39,10 +39,15 @@ struct PhysPars{
   ftype rho0;
   double phys_time;
   char* drop_dir;
-  ftype dx,dy,dz,dt;
+  ftype dr,dx,dy,dz,dt;
+  ftype RhoUnitConv, VelUnitConv, ViscUnitConv, TempUnitConv;
+  //ftype viscosity;
+  ftype visc_atT;
+ 
   int StepIterPeriod;
   int stencilInterpWidth;
   int stencilFixed;
+  int RegOrder;
   Source src;
 
   void set_drop_dir(std::string dir) {
@@ -52,12 +57,20 @@ struct PhysPars{
     struct stat st = {0};
     if(stat(dir.c_str(), &st)==-1) _mkdir(dir.c_str());
   }
+  void setupUnits();
   void setDefault(){
+    RhoUnitConv=1;
+    VelUnitConv= 1;
+    ViscUnitConv= 1;
+    TempUnitConv= 1;
     rho0=1;
-    tau=0.6;
+    //viscosity = 0.01;
+    visc_atT = 0.01;
+    tau=0.5+visc_atT;
     dtau=1./tau;
     stencilInterpWidth=3;
     stencilFixed=0;
+    RegOrder=-1;
   }
   void MallocData();
   void setCell(int val, int x,int y);
