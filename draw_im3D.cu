@@ -14,7 +14,7 @@ im3D_pars im3DHost;
 void calcStep(int REV=1);
 
 const char* FuncStr[] = {
-  "rho", "Niter", "Vx", "Vy", "Vz", "T"
+  "rho", "Vx", "Vy", "Vz", "T", "Press", "Vorticity", "Niter"
 };
 
 __global__ void __launch_bounds__(Nz) draw(float* buf) {
@@ -24,16 +24,25 @@ __global__ void __launch_bounds__(Nz) draw(float* buf) {
 
   float* pbuf=&buf[ix+gridDim.x*(iy+gridDim.y*iz)];
   Cell cell = pars.data.get_cell(0, ix,iy,iz);
+  Cell cellPx = pars.data.get_cell(0, (ix+1   )%Nx,iy,iz ), cellPy = pars.data.get_cell(0, ix, (iy+1   )%Ny,iz ), cellPz = pars.data.get_cell(0, ix, iy, (iz+1   )%Nz );
+  Cell cellMx = pars.data.get_cell(0, (ix-1+Nx)%Nx,iy,iz ), cellMy = pars.data.get_cell(0, ix, (iy-1+Ny)%Ny,iz ), cellMz = pars.data.get_cell(0, ix, iy, (iz-1+Nz)%Nz );
   ftype rho=cell.rho;
   ftype3 vel = cell.vel;
+  ftype3 vort;
+  vort.x = 0.5*(cellPy.vel.z-cellMy.vel.z) - 0.5*(cellPz.vel.y-cellMz.vel.y);
+  vort.y = 0.5*(cellPz.vel.x-cellMz.vel.x) - 0.5*(cellPx.vel.z-cellMx.vel.z);
+  vort.z = 0.5*(cellPx.vel.y-cellMx.vel.y) - 0.5*(cellPy.vel.x-cellMy.vel.x);
+  const int MaxFunc = sizeof(FuncStr)/sizeof(char*);
   
   switch(pars.nFunc) {
+      case MaxFunc-1: *pbuf=float(cell.Niter); break;
       case 0 : *pbuf=float(rho); break;
-      case 1 : *pbuf=float(cell.Niter); break;
-      case 2 : *pbuf=float(vel.x); break;
-      case 3 : *pbuf=float(vel.y); break;
-      case 4 : *pbuf=float(vel.z); break;
-      case 5 : *pbuf=float(cell.T); break;
+      case 1 : *pbuf=float(vel.x); break;
+      case 2 : *pbuf=float(vel.y); break;
+      case 3 : *pbuf=float(vel.z); break;
+      case 4 : *pbuf=float(cell.T); break;
+      case 5 : *pbuf=float(rho*cell.T); break;
+      case 6 : *pbuf=float(length(vort)); break;
       default: break;
   }
 }
@@ -109,7 +118,7 @@ void read_float3(float* v, char* str);
 float read_float(char* str);
 
 void launch_im3D(int argc, char** argv){
-  parsHost.nFunc = 1; parsHost.MaxFunc = sizeof(FuncStr)/sizeof(char*);
+  parsHost.nFunc = 0; parsHost.MaxFunc = sizeof(FuncStr)/sizeof(char*);
     
   cudaTimer tm; tm.start();
   parsHost.reset_im();

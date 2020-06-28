@@ -47,23 +47,23 @@ template<int RegOrder=-1> __global__ __launch_bounds__(LBMconsts::Qn) void  stre
 
   MomentsMatrix* Mm,*Mm0;
   __shared__ MomentsMatrix _mmsh;
-  __shared__ MomentsMatrix _mmsh0;
   __shared__ MomentsMatrix* shMm;
-  __shared__ MomentsMatrix* shMm0;
+  //__shared__ MomentsMatrix _mmsh0;
+  //__shared__ MomentsMatrix* shMm0;
 
   if(useSHmem4momMatrix) {
     Mm = &_mmsh;
-    Mm0 = &_mmsh0;
+    //Mm0 = &_mmsh0;
   } else {
     if(threadIdx.x==0) {
       shMm = (MomentsMatrix*)malloc(sizeof(MomentsMatrix));
-      shMm0 = (MomentsMatrix*)malloc(sizeof(MomentsMatrix));
+      //shMm0 = (MomentsMatrix*)malloc(sizeof(MomentsMatrix));
       assert(shMm);
-      assert(shMm0);
+      //assert(shMm0);
     }
     __syncthreads();
     Mm=shMm;
-    Mm0=shMm0;
+    //Mm0=shMm0;
   }
 
   __shared__ Cell cell_new;
@@ -77,11 +77,13 @@ template<int RegOrder=-1> __global__ __launch_bounds__(LBMconsts::Qn) void  stre
 
     __syncthreads();
     Mm->init(gauge);
-    Mm0->init(make_ftype4(0,0,0,1));
     __syncthreads();
     Mm->inverse();
-    Mm0->inverse();
     __syncthreads();
+    /* Mm0->init(make_ftype4(0,0,0,1));
+      __syncthreads();
+      Mm0->inverse();
+      __syncthreads(); */
 
     const int iq = threadIdx.x;
     ftype3 v = ef[iq]*gauge.w + make_ftype3(gauge.x,gauge.y,gauge.z);

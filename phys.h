@@ -25,12 +25,9 @@ static void _mkdir(const char *dir) {
   mkdir(tmp, S_IRWXU);
 }
 
-struct Source{
-  double X0,Y0,Z0;
-  int start;
-  void set(const double A) {
-    X0=A; Y0=A; Z0=A;
-  }
+struct InitPars{
+  ftype uDragX,uDragY,u0,beta0,r0,T0;
+  int planeTVG;
 };
 
 // Do not forget to copy parameters structure to GPU
@@ -48,7 +45,7 @@ struct PhysPars{
   int stencilInterpWidth;
   int stencilFixed;
   int RegOrder;
-  Source src;
+  InitPars initial;
 
   void set_drop_dir(std::string dir) {
     //drop_dir=(std::string*)realloc(drop_dir,sizeof(std::string)); *drop_dir=dir;

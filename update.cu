@@ -10,8 +10,13 @@ void calcLBM(int it, std::vector<double>& timings);
 void simple_drop();
 void debug_print();
 
-__managed__ double TotMoments[5];
-__global__ void total_moments( double totM[5] );
+struct FullIntegrals{
+  double mass;
+  double3 momentum;
+  double Energy, kinEn, Enstropy, Entropy;
+};
+__managed__ FullIntegrals TotMoments;
+__global__ void total_moments( FullIntegrals& totM );
 
 void calcStep(int REV=1){
   cuTimer calct;
@@ -31,9 +36,14 @@ void calcStep(int REV=1){
   for(auto tmg: timings) printf("%.2f ",tmg);
   printf("\n");
   
-  memset( TotMoments, 0, sizeof(TotMoments) );
+  if(parsHost.iStep%1==0) {
+  memset( &TotMoments, 0, sizeof(FullIntegrals) );
   total_moments<<<dim3(Nx,Ny),Nz>>>(TotMoments); cudaDeviceSynchronize(); CHECK_ERROR( cudaGetLastError() );
-  printf("Total Moments: Mass %.15f Momentum( %.12f %.12f %.12f ), M2 %.12f\n", TotMoments[0], TotMoments[1], TotMoments[2], TotMoments[3], TotMoments[4] );
+  printf("Total Conservations: Mass %.15f Momentum( %.12f %.12f %.12f ), M2 %.12f\n",
+                  TotMoments.mass, TotMoments.momentum.x, TotMoments.momentum.y, TotMoments.momentum.z, TotMoments.Energy );
+  printf("Total Characteristics: KineticEnergy: %.15f Enstropy: %.15f Entropy: %.15f\n",
+                  TotMoments.kinEn, TotMoments.Enstropy, TotMoments.Entropy );
+  }
 }
 
 template<int n> struct KerRunner {
@@ -69,7 +79,7 @@ void calcLBM(int it, std::vector<double>& timings){
 
 }
 
-__global__ void total_moments( double totMom[5] ){
+__global__ void total_moments( FullIntegrals& totMom ){
   const int ix=blockIdx.x;
   const int iy=blockIdx.y;
   const int iz=threadIdx.x;
@@ -80,12 +90,26 @@ __global__ void total_moments( double totMom[5] ){
   const ftype rho=cell.rho;
   const ftype3 vel = cell.vel;
   const ftype T = cell.T;
+  ftype entropy = 0; for(int iq=0;iq<LBMconsts::Qn;iq++) entropy+= cell.f[iq]*log(cell.f[iq]/w[iq]);
+  Cell cellMx = pars.data.get_cell(0, (ix-1+Nx)%Nx, iy, iz);
+  Cell cellPx = pars.data.get_cell(0, (ix+1   )%Nx, iy, iz);
+  Cell cellMy = pars.data.get_cell(0, ix, (iy-1+Ny)%Ny, iz);
+  Cell cellPy = pars.data.get_cell(0, ix, (iy+1   )%Ny, iz);
+  Cell cellMz = pars.data.get_cell(0, ix, iy, (iz-1+Nz)%Nz);
+  Cell cellPz = pars.data.get_cell(0, ix, iy, (iz+1   )%Nz);
+  ftype3 vorticity;
+  vorticity.x = 0.5*(cellPy.vel.z-cellMy.vel.z) - 0.5*(cellPz.vel.y-cellMz.vel.y);
+  vorticity.y = 0.5*(cellPz.vel.x-cellMz.vel.x) - 0.5*(cellPx.vel.z-cellMx.vel.z);
+  vorticity.z = 0.5*(cellPx.vel.y-cellMx.vel.y) - 0.5*(cellPy.vel.x-cellMy.vel.x);
 
-  atomicAdd(&totMom[0], rho);
-  atomicAdd(&totMom[1], rho*vel.x );
-  atomicAdd(&totMom[2], rho*vel.y );
-  atomicAdd(&totMom[3], rho*vel.z );
-  atomicAdd(&totMom[4], rho*T*DIM + rho*dot(vel,vel) );
+  atomicAdd(&totMom.mass      , rho);
+  atomicAdd(&totMom.momentum.x, rho*vel.x );
+  atomicAdd(&totMom.momentum.y, rho*vel.y );
+  atomicAdd(&totMom.momentum.z, rho*vel.z );
+  atomicAdd(&totMom.Energy    , rho*T*DIM/2 + rho*dot(vel,vel)/2 );
+  atomicAdd(&totMom.kinEn     , rho*dot(vel,vel)/2 );
+  atomicAdd(&totMom.Enstropy  , rho*dot(vorticity,vorticity)/2 );
+  atomicAdd(&totMom.Entropy   , entropy );
 }
 
 inline void debug_print(){

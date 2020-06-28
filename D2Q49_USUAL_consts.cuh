@@ -2,7 +2,6 @@
 #define QN 49
 #define QN_IN_DM 100   // QN*2^DIM
 
-// 1 and 3 is ZOT lattice
 const int ec1=1;
 const int ec2=2;
 const int ec3=3;
@@ -12,8 +11,8 @@ const int ec3d=ec3*ec3;
 
 #include "REFERENCE_TEMP_AND_WEIGHTS-SET-7.h"
 
-const ftype Tmin = 1./3.;
-const ftype Tmax = 3.0;
+const ftype Tmin = 1./100.;
+const ftype Tmax = 10.0;
 
 #define NON_ISOTHERMAL_RELAXATION
 

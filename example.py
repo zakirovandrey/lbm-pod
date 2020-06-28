@@ -3,8 +3,8 @@ from math import *
 import sys
 import os
 
-Nx=100
-Ny=100
+Nx=200
+Ny=200
 Nz=1
 FloatPrecision=2
 
@@ -19,18 +19,24 @@ print "Grid sizes: %d x %d x %d"%(Nx,Ny,Nz)
 G.PPhost.setDefault()
 G.PPhost.stencilInterpWidth=2;
 G.PPhost.stencilFixed=1;
-G.PPhost.RegOrder=4;
+G.PPhost.RegOrder=-1
 
 G.PPhost.dr=1.0;
-G.PPhost.dt=1.0;
+G.PPhost.dt=1.0/10;
 
 G.PPhost.visc_atT=0.1;
 
-#SS = G.PP.src
-#SS.srcX, SS.srcY, SS.srcZ = center[0],center[1],center[2];
-#SS.set(50.0,cL,pi/2,0)
+G.PPhost.initial.planeTVG=0;
+G.PPhost.initial.u0=0.2;
+G.PPhost.initial.rho0=1;
 
-G.PPhost.StepIterPeriod = 1#32#256#1024#1#*4#16384;
+G.PPhost.initial.uDragX=0.0;
+G.PPhost.initial.uDragY=0;
+G.PPhost.initial.beta0=10.0#1.0;
+G.PPhost.initial.r0=10.0;
+G.PPhost.initial.T0=1.8#1/3.#0.8#1./3;
+
+G.PPhost.StepIterPeriod = 1
 G.PPhost.set_drop_dir(drop_into);
 
 lbm.run(sys.argv)

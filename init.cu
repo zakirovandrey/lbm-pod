@@ -19,9 +19,15 @@ void init(){
   copy2dev( PPhost, PPdev );
 
   cuTimer init_timer;
-  fill<<<dim3(Nx,Ny),Nz>>>( [] __device__(int ix, int iy,int iz) {return blank_mat(ix,iy,iz);} );
+  //fill<<<dim3(Nx,Ny),Nz>>>( [] __device__(int ix, int iy,int iz) {return blank_mat(ix,iy,iz);} );
+  fill<<<dim3(Nx,Ny),Nz>>>( [] __device__(int ix, int iy,int iz) {
+     return vortex_mat(ix,iy,iz);
+     //return TGV_mat(ix,iy,iz);
+     //return blank_mat(ix,iy,iz);
+  } );
   cudaDeviceSynchronize(); CHECK_ERROR( cudaGetLastError() );
   printf("\n");
+  printf("TLat=%g\n",LBMconsts::TLat);
 
   printf("Initialization time: %.2f ms\n", init_timer.gettime());
   
@@ -48,7 +54,11 @@ template<class F> __global__ void fill(F func){
   assert(rho_uT.second.w<LBMconsts::Tmax);
 
   ftype feq[LBMconsts::Qn];
-  c.calcEq(feq, rho_uT.first, make_ftype3(0,0,0), rho_uT.second.w );
+  #ifdef SEMI_LAGRANGIAN
+  c.calcEq(feq, rho_uT.first, make_ftype3(0,0,0), LBMconsts::cs2 );
+  #else
+  c.calcEq(feq, rho_uT.first, vel, rho_uT.second.w );
+  #endif
   for(int iq=0; iq<LBMconsts::Qn; iq++) c.f[iq]=feq[iq];
   c.rho = rho;
   c.vel = vel;

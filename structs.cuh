@@ -8,6 +8,7 @@
 //---------------------------Main Calculation parameters------------------------------------//
 struct AllParams{
   unsigned int nFunc;
+  unsigned int MaxFunc;
   int checkFlag;
   int Nt;
   int3 Nroot;
@@ -18,7 +19,6 @@ struct AllParams{
 
 struct AllParamsHost: public AllParams {
   Arr3D_pars arr4im, arr4surf;
-  unsigned int MaxFunc;
   void set();
   void reset_im() {
     int ndevs=0; int curdev;

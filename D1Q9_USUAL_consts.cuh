@@ -1,25 +1,27 @@
-#define DIM 2
+#define DIM 1
 #define QN 9
-#define QN_IN_DIM 36   // QN*2^DIM
+#define QN_IN_DM 14   // QN*2^DIM
 
+// 1 and 3 is ZOT lattice
 const int ec1=1;
+const int ec2=2;
+const int ec3=3;
+const int ec4=5;
+const int ec1d=ec1*ec1;
+const int ec2d=ec2*ec2;
+const int ec3d=ec3*ec3;
+const int ec4d=ec4*ec4;
+
+#include "REFERENCE_TEMP_AND_WEIGHTS-SET-9.h"
+
+const ftype Tmin = 1./100;
+const ftype Tmax = 100.0;
+
+#define NON_ISOTHERMAL_RELAXATION
+
 constexpr const int3 _e[QN] = {
-  { 0, 0, 0}, { 0, 1, 0}, { 0,-1, 0},
-  { 1, 0, 0}, { 1, 1, 0}, { 1,-1, 0},
-  {-1, 0, 0}, {-1, 1, 0}, {-1,-1, 0},
+  {0   , 0   , 0 }, {+ec1, 0   , 0 }, {-ec1, 0   , 0 }, {+ec2, 0   , 0 }, {-ec2, 0   , 0 }, {+ec3, 0   , 0 }, {-ec3, 0   , 0 }, {+ec4, 0   , 0 }, {-ec4, 0   , 0 }
 };
-
-constexpr const ftype cs2 = 1./3.;
-const ftype TLat=cs2;
-constexpr ftype W0get(const ftype Tv) { return 2./3.; }
-constexpr ftype W1get(const ftype Tv) { return 1./6.; }
-constexpr ftype W2get(const ftype Tv) { return 1./6.; }
-
-const ftype Tmin = 0;
-const ftype Tmax = 1;
-
-
-//#define NON_ISOTHERMAL_RELAXATION
 
 #define WEIGHTS_MANUALLY
 
@@ -32,9 +34,7 @@ const ftype Tmax = 1;
 
 constexpr ftype w_get(const int i, const ftype Tc) {
   const ftype arr[QN] = {
-  W0*W0, W0*W1, W0*W1,
-  W1*W0, W1*W1, W1*W1,
-  W1*W0, W1*W1, W1*W1,
+  W0, W1, W1, W2, W2, W3, W3, W4, W4
   };
   return arr[i];
 }
@@ -50,3 +50,5 @@ constexpr ftype _w[QN] = {
   W2*W0, W2*W1, W2*W1, W2*W2, W2*W2,
   W2*W0, W2*W1, W2*W1, W2*W2, W2*W2,
 };*/
+
+
