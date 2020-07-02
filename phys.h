@@ -41,7 +41,7 @@ struct PhysPars{
   //ftype viscosity;
   ftype visc_atT;
  
-  int StepIterPeriod;
+  int StepIterPeriod, MaxSteps;
   int stencilInterpWidth;
   int stencilFixed;
   int RegOrder;

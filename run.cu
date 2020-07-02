@@ -76,7 +76,7 @@ try {
   cudaDeviceSynchronize(); CHECK_ERROR( cudaGetLastError() );
 
   if(test_only) {
-    while(true) {
+    while(parsHost.iStep<parsHost.StepsMax || parsHost.StepsMax<=0 ) {
       tm.start();
       calcStep();
       double tCpu=tm.stop();

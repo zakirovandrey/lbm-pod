@@ -13,6 +13,7 @@ struct AllParams{
   int Nt;
   int3 Nroot;
   int iStep;
+  int StepsMax;
   double curtime;
   Data_t data;
 };

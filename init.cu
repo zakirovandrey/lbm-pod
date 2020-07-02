@@ -10,6 +10,7 @@ template<class F> __global__ void fill(F);
 
 void init(){
   parsHost.iStep=0;
+  parsHost.StepsMax=PPhost.MaxSteps;
   copy2dev( parsHost, pars );
   copy2dev( PPhost, PPdev );
 
@@ -21,7 +22,8 @@ void init(){
   cuTimer init_timer;
   //fill<<<dim3(Nx,Ny),Nz>>>( [] __device__(int ix, int iy,int iz) {return blank_mat(ix,iy,iz);} );
   fill<<<dim3(Nx,Ny),Nz>>>( [] __device__(int ix, int iy,int iz) {
-     return vortex_mat(ix,iy,iz);
+     return shear_wave(ix,iy,iz);
+     //return vortex_mat(ix,iy,iz);
      //return TGV_mat(ix,iy,iz);
      //return blank_mat(ix,iy,iz);
   } );

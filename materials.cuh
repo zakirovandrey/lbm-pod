@@ -92,6 +92,30 @@ __device__ inline std::pair<ftype, ftype4> vortex_mat(int ix, int iy, int iz){
   return std::make_pair(rho, make_ftype4(vx,vy,vz,T));
 };
 
+__device__ inline std::pair<ftype, ftype4> shear_wave(int ix, int iy, int iz){
+  const ftype T0 = PPdev.initial.T0;
+
+  const ftype u_k = PPdev.initial.u0;
+  const ftype u_l = 0.05*sin(2*M_PI*(ix+iy)/Nx);
+
+  ftype vx=0.0,vy=0,vz=0;
+  vx = u_k/sqrt(2.0) - u_l/sqrt(2.0);
+  vy = u_k/sqrt(2.0) + u_l/sqrt(2.0);
+
+  const ftype gamma = double(DIM+2)/DIM;
+
+  ftype T = T0;
+  ftype rho = 1.0;
+
+  rho*= PPdev.RhoUnitConv;
+  vx*= PPdev.VelUnitConv;
+  vy*= PPdev.VelUnitConv;
+  vz*= PPdev.VelUnitConv;
+  T*= PPdev.TempUnitConv;
+
+  return std::make_pair(rho, make_ftype4(vx,vy,vz,T));
+};
+
 
 
 
