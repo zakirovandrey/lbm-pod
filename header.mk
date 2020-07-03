@@ -13,7 +13,7 @@ endif
 endif
 
 ifeq ($(ARCH),k60)
-NVCC := nvcc -std=c++11 -ccbin $(GCC) -O3 -I/common/NVIDIA_CUDA-10.0_Samples/common/inc/
+NVCC := nvcc -std=c++11 -ccbin $(GCC) -O3 -I/common/NVIDIA_CUDA-10.0_Samples/common/inc/ -I./
 GENCODE_SM := -arch=sm_70
 else ifeq ($(ARCH),k100)
 NVCC := /common/cuda-6.5/bin/nvcc -ccbin $(GCC) -O3 
@@ -38,7 +38,7 @@ NVCC := nvcc -ccbin $(GCC) -O3
 GENCODE_SM := -arch=sm_37
 NOG=e1
 else
-NVCC := /usr/local/cuda-10.0/bin/nvcc -ccbin $(GCC) -O3  
+NVCC := nvcc -ccbin $(GCC) -O3  
 GENCODE_SM := -arch=sm_61
 endif 
 
@@ -61,7 +61,7 @@ endif
 EXTRA_NVCCFLAGS   ?=
 EXTRA_NVCCLDFLAGS ?=
 EXTRA_LDFLAGS     ?=
-EXTRA_CCFLAGS     ?= #-std=c++11
+EXTRA_CCFLAGS     ?= -I./Sprout/ #-std=c++11
 
 ifeq ($(ARCH),kiae)
 INCLUDES  := -I./
