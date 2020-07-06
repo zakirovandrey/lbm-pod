@@ -30,6 +30,10 @@ GENCODE_SM := -arch=sm_61
 else ifeq ($(ARCH),plasma)
 NVCC := /usr/local/cuda-10.0/bin/nvcc -ccbin $(GCC) -O3 -std=c++14 --expt-relaxed-constexpr -g -I/usr/local/cuda-10.0/include/ -I./ -I./Sprout/
 GENCODE_SM := -arch=sm_52
+else ifeq ($(ARCH),zu)
+GCC  := g++-7
+NVCC := nvcc -ccbin $(GCC) -O3 -std=c++14 --expt-relaxed-constexpr -g -I./ -I./Sprout/
+GENCODE_SM := -arch=sm_52
 else ifeq ($(ARCH),ion)
 NVCC := /mnt/D/home/zakirov/cuda-7.5/bin/nvcc -ccbin $(GCC) -O3 
 GENCODE_SM := -arch=sm_50
