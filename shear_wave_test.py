@@ -28,7 +28,9 @@ G.PPhost.visc_atT=0.1;
 
 Tinit=0.1;
 
-G.PPhost.initial.u0=0.1*sqrt(Tinit);
+G.PPhost.initial.ugradX=0.1*sqrt(Tinit);
+G.PPhost.initial.ugradY=0.1*sqrt(Tinit);
+G.PPhost.initial.u0=0.05;
 G.PPhost.initial.rho0=1;
 
 G.PPhost.initial.T0=Tinit
