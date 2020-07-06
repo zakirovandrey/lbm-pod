@@ -7,14 +7,9 @@ const ftype Dim=3;
 const ftype Tmin=0;
 const ftype Tmax=TLat*10;
 
-//strange_coeff = 0.8883588741731
-//strange_coeff = 1.100371987410572
-const ftype ec1 = 1.100371987410572*sprout::math::sqrt(5.0+sprout::math::sqrt(10.));
-const ftype ec2 = 1.100371987410572*sprout::math::sqrt(5.0-sprout::math::sqrt(10.));
-const ftype ec3 = 1.100371987410572*sprout::math::sqrt(5.0+sprout::math::sqrt(10.));
-//const ftype ec1 = sprout::math::sqrt(3);
-//const ftype ec2 = sprout::math::sqrt(3);
-//const ftype ec3 = sprout::math::sqrt(3);
+const ftype ec1 = sprout::math::sqrt(3.0);
+const ftype ec2 = sprout::math::sqrt(3.0);
+const ftype ec3 = sprout::math::sqrt(3.0);
 const ftype ec1d=ec1*ec1;
 const ftype ec2d=ec2*ec2;
 const ftype ec3d=ec3*ec3;

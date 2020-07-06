@@ -7,10 +7,12 @@ const ftype Dim=3;
 const ftype Tmin=0;
 const ftype Tmax=TLat*10;
 
-//strange_coeff = 0.8883588741731
-//strange_coeff = 1.100371987410572
-const ftype ec1 = 1.100371987410572*sprout::math::sqrt(5.0+sprout::math::sqrt(10.));
-const ftype ec2 = 1.100371987410572*sprout::math::sqrt(5.0-sprout::math::sqrt(10.));
+//const ftype ec1 = sprout::math::sqrt(5.0);
+//const ftype ec2 = sprout::math::sqrt(5.0/2.0);
+//const ftype ec1 = sprout::math::sqrt(3.0);
+//const ftype ec2 = sprout::math::sqrt(3.0);
+const ftype ec1 = sprout::math::sqrt(4.0);
+const ftype ec2 = sprout::math::sqrt(8.0/3.0);
 const ftype ec1d=ec1*ec1;
 const ftype ec2d=ec2*ec2;
 constexpr const ftype3 _ef[QN] = {
@@ -23,8 +25,8 @@ constexpr const ftype3 _ef[QN] = {
 };
 constexpr const ftype cs2 = TLat;
 
-const ftype W2 = 1.0/(4*ec2d*ec2d);
-const ftype W1 = (1-8*ec2d*W2)/(2*ec1d);
+const ftype W1 = 1.0/(2*(2*ec1d/ec2d+1)*(2*ec1d/ec2d+1));
+const ftype W2 = ( ec1d*ec1d/(ec2d*ec2d) ) /( 4*(2*ec1d/ec2d+1)*(2*ec1d/ec2d+1) );
 const ftype W0 = 1-6*W1-12*W2;
 constexpr ftype _w[QN] = {
   W0,
