@@ -41,6 +41,8 @@ struct PhysPars{
   //ftype viscosity;
   ftype visc_atT;
  
+  int fixedTemperature;
+
   int StepIterPeriod, MaxSteps;
   int stencilInterpWidth;
   int stencilFixed;
@@ -68,6 +70,7 @@ struct PhysPars{
     stencilInterpWidth=3;
     stencilFixed=0;
     RegOrder=-1;
+    fixedTemperature=0;
   }
   void MallocData();
   void setCell(int val, int x,int y);

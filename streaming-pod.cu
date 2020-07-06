@@ -66,6 +66,7 @@ template<int RegOrder=-1> __global__ __launch_bounds__(LBMconsts::Qn) void  stre
     //Mm0=shMm0;
   }
 
+  //cell.vel*=0; cell.T=PPdev.initial.T0/10.0;
   __shared__ Cell cell_new;
   int Niter=0;
   while(Niter<100) {
@@ -157,6 +158,7 @@ template<int RegOrder=-1> __global__ __launch_bounds__(LBMconsts::Qn) void  stre
       cell_new.rho = Vrho.w;
       cell_new.vel = make_ftype3(Vrho.x,Vrho.y,Vrho.z)/cell_new.rho;
       cell_new.T = M2/cell_new.rho-dot(cell_new.vel,cell_new.vel); cell_new.T/=DIM;
+      if(PPdev.fixedTemperature) cell_new.T=cell.T;
       if(cell_new.T<0) {
         printf("Convergency problem: cell %d %d %d (iteration %d) got negative T=%g, reset to positive\n",
                                           ix,iy,iz,Niter, cell_new.T );

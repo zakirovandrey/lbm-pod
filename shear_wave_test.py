@@ -32,9 +32,10 @@ G.PPhost.initial.u0=0.1*sqrt(Tinit);
 G.PPhost.initial.rho0=1;
 
 G.PPhost.initial.T0=Tinit
+G.PPhost.fixedTemperature=1
 
-G.PPhost.StepIterPeriod = 10
-G.PPhost.MaxSteps = 100
+G.PPhost.StepIterPeriod = 1
+G.PPhost.MaxSteps = 1000
 G.PPhost.set_drop_dir(drop_into);
 
 lbm.run(sys.argv)
