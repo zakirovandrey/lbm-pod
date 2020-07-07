@@ -16,7 +16,7 @@ constexpr ftype W1get(const ftype Tv) { return 1./6.; }
 constexpr ftype W2get(const ftype Tv) { return 1./6.; }
 
 const ftype Tmin = 0;
-const ftype Tmax = 1;
+const ftype Tmax = 100;
 
 
 //#define NON_ISOTHERMAL_RELAXATION
