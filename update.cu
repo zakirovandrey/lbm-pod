@@ -26,7 +26,9 @@ void calcStep(int REV=1){
   int Ntiles=0;
   copy2dev( parsHost, pars );
   copy2dev( PPhost, PPdev );
-  calcLBM(parsHost.iStep, timings);
+  if(parsHost.iStep>1) {
+    calcLBM(parsHost.iStep, timings);
+    }
   copy2dev( parsHost, pars );
   copy2dev( PPhost, PPdev );
   double phys_time=parsHost.iStep;
