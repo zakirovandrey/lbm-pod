@@ -43,7 +43,7 @@ constexpr const ftype dt=1.0;
 // #define D1Q5
 // #define D1Q3
 // #define D2Q9
-//#define D2Q5
+// #define D2Q5
 
 template<int B, int ...Btail> constexpr void debug_consts_assert() { static_assert(B, ""); }
 
