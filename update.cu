@@ -9,6 +9,7 @@
 void calcLBM(int it, std::vector<double>& timings);
 void simple_drop();
 void debug_print();
+void print_diagnostics();
 
 struct FullIntegrals{
   double mass;
@@ -23,12 +24,10 @@ void calcStep(int REV=1){
   cuTimer calct;
   parsHost.iStep++;
   std::vector<double> timings;
-  int Ntiles=0;
   copy2dev( parsHost, pars );
   copy2dev( PPhost, PPdev );
-  if(parsHost.iStep>1) {
-    calcLBM(parsHost.iStep, timings);
-    }
+  if(parsHost.iStep==1) print_diagnostics();
+  calcLBM(parsHost.iStep, timings);
   copy2dev( parsHost, pars );
   copy2dev( PPhost, PPdev );
   double phys_time=parsHost.iStep;
@@ -39,14 +38,7 @@ void calcStep(int REV=1){
   for(auto tmg: timings) printf("%.2f ",tmg);
   printf("\n");
   
-  if(parsHost.iStep%PPhost.StepIterPeriod==0) {
-  memset( &TotMoments, 0, sizeof(FullIntegrals) );
-  total_moments<<<dim3(Nx,Ny),Nz>>>(TotMoments); cudaDeviceSynchronize(); CHECK_ERROR( cudaGetLastError() );
-  printf("Total Conservations: Mass %.15f Momentum( %.12f %.12f %.12f ), M2 %.12f\n",
-                  TotMoments.mass, TotMoments.momentum.x, TotMoments.momentum.y, TotMoments.momentum.z, TotMoments.Energy );
-  printf("Total Characteristics: KineticEnergy: %.15f Enstropy: %.15f Entropy: %.15f MaxVelocity: %.15f\n",
-                  TotMoments.kinEn, TotMoments.Enstropy, TotMoments.Entropy, *((double*)&(TotMoments.MaxVelocity)) );
-  }
+  if(parsHost.iStep%PPhost.StepIterPeriod==0) print_diagnostics();
 }
 
 template<int n> struct KerRunner {
@@ -114,6 +106,15 @@ __global__ void total_moments( FullIntegrals& totMom ){
   atomicAdd(&totMom.Enstropy  , rho*dot(vorticity,vorticity)/2 );
   atomicAdd(&totMom.Entropy   , entropy );
   atomicMax(&totMom.MaxVelocity, __double_as_longlong(sqrt(dot(vel,vel))) );
+}
+
+inline void print_diagnostics() {
+  memset( &TotMoments, 0, sizeof(FullIntegrals) );
+  total_moments<<<dim3(Nx,Ny),Nz>>>(TotMoments); cudaDeviceSynchronize(); CHECK_ERROR( cudaGetLastError() );
+  printf("Total Conservations: Mass %.15f Momentum( %.12f %.12f %.12f ), M2 %.12f\n",
+                  TotMoments.mass, TotMoments.momentum.x, TotMoments.momentum.y, TotMoments.momentum.z, TotMoments.Energy );
+  printf("Total Characteristics: KineticEnergy: %.15f Enstropy: %.15f Entropy: %.15f MaxVelocity: %.15f\n",
+                  TotMoments.kinEn, TotMoments.Enstropy, TotMoments.Entropy, *((double*)&(TotMoments.MaxVelocity)) );
 }
 
 inline void debug_print(){
