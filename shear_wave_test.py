@@ -5,7 +5,7 @@ import os
 
 Nx=200
 Ny=200
-Nz=10
+Nz=1
 FloatPrecision=2
 
 MPIon=0
