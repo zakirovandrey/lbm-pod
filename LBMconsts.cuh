@@ -22,7 +22,7 @@ constexpr const ftype dt=1.0;
 //#define D3Q19_POD
 //#define D2Q36_POD
 //#define D2Q25_POD
-#define D2Q9_POD
+//#define D2Q9_POD
 //#define D1Q6_POD
 //#define D1Q5_POD
 //#define D1Q3_POD
@@ -30,7 +30,7 @@ constexpr const ftype dt=1.0;
 
 //#define D3Q125
 //#define D3Q64
-//#define D3Q27
+#define D3Q27
 
 //#define D2Q81
 //#define D2Q49
@@ -43,7 +43,7 @@ constexpr const ftype dt=1.0;
 // #define D1Q5
 // #define D1Q3
 // #define D2Q9
-// #define D2Q5
+//#define D2Q5
 
 template<int B, int ...Btail> constexpr void debug_consts_assert() { static_assert(B, ""); }
 

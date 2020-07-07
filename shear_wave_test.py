@@ -5,7 +5,7 @@ import os
 
 Nx=200
 Ny=200
-Nz=1
+Nz=10
 FloatPrecision=2
 
 MPIon=0
@@ -19,7 +19,7 @@ print "Grid sizes: %d x %d x %d"%(Nx,Ny,Nz)
 G.PPhost.setDefault()
 G.PPhost.stencilInterpWidth=2;
 G.PPhost.stencilFixed=0;
-G.PPhost.RegOrder = 4
+G.PPhost.RegOrder = 3
 
 G.PPhost.dr=1.0;
 G.PPhost.dt=1.0;
