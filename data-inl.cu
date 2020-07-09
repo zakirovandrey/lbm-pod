@@ -1,4 +1,5 @@
-__host__ __device__ inline void Cell::calcEq(ftype feq[Qn], const ftype Rho, const ftype3 Velocity, const ftype Tempr){
+#include "phys.h"
+__device__ inline void Cell::calcEq(ftype feq[Qn], const ftype Rho, const ftype3 Velocity, const ftype Tempr){
   using namespace LBMconsts;
   const ftype rho = Rho;
   ftype3 u = Velocity;
@@ -6,24 +7,18 @@ __host__ __device__ inline void Cell::calcEq(ftype feq[Qn], const ftype Rho, con
   ftype dT = dcs2;
   ftype Tcur = cs2;
   const ftype T0=cs2;
-  #ifdef NON_ISOTHERMAL_RELAXATION
-  Tcur=Tempr;
-  #endif
 
   const ftype dT2 = dT*dT;
   const ftype dT4 = dT2*dT2;
   
   const ftype u2 = dot(u,u);
   const ftype u4 = u2*u2;
-  const int TERM1 = (EqOrder>=1);
-  const int TERM2 = (EqOrder>=2);
-  #ifdef NON_ISOTHERMAL_RELAXATION
-  const int TERM3 = 1;//(EqOrder>=3);
-  const int TERM4 = 1;//(EqOrder>=4);
-  #else
-  const int TERM3 = 0;
-  const int TERM4 = 0;
-  #endif
+  const int eno = PPdev.EquilibriumOrder;
+  const int TERM1 = (eno>=1);
+  const int TERM2 = (eno>=2);
+  const int TERM3 = (eno>=3);
+  const int TERM4 = (eno>=4);
+  if(PPdev.IsothermalRelaxation) Tcur=cs2; else Tcur=Tempr;
   const ftype mxwU = 1 - TERM2*u2*0.5*dT;
   for(int i=0; i<Qn; i++) {
     ftype3 eidx = make_ftype3(e[i]);

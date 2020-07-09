@@ -1,13 +1,12 @@
 #include "LBMconsts.cuh"
 struct Cell{
   static const int Qn=LBMconsts::Qn;
-  static const int EqOrder=2;
   ftype f[Qn];
   ftype rho;
   ftype3 vel;
   ftype T;
   int Niter;
-  __host__ __device__ static void calcEq(ftype feq[Qn], const ftype Rho, const ftype3 Velocity, const ftype Tempr);
+  __device__ static void calcEq(ftype feq[Qn], const ftype Rho, const ftype3 Velocity, const ftype Tempr);
   __host__ __device__ void operator=(const ftype v){
     for(int iq=0;iq<Qn;iq++) f[iq]=v;
   }

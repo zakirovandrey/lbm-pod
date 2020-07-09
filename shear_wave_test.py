@@ -20,6 +20,8 @@ G.PPhost.setDefault()
 G.PPhost.stencilInterpWidth=2;
 G.PPhost.stencilFixed=1;
 G.PPhost.RegOrder = 3
+G.PPhost.EquilibriumOrder=2;
+G.PPhost.IsothermalRelaxation=0;
 
 G.PPhost.dr=1.0;
 G.PPhost.dt=1.0;
@@ -40,6 +42,7 @@ G.PPhost.initial.uDragY = (Ma_a/sqrt(2))*sqrt(Tinit);
 G.PPhost.initial.uDragZ = 0;
 G.PPhost.initial.u0 = 0.05;
 G.PPhost.initial.rho0 = 1;
+G.PPhost.initial.A0 = 0.;
 
 G.PPhost.initial.T0=Tinit
 G.PPhost.fixedTemperature=1
