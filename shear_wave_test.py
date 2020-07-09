@@ -21,7 +21,7 @@ G.PPhost.stencilInterpWidth=2;
 G.PPhost.stencilFixed=1;
 G.PPhost.RegOrder = 3
 G.PPhost.EquilibriumOrder=2;
-G.PPhost.IsothermalRelaxation=0;
+G.PPhost.IsothermalRelaxation=1;
 
 G.PPhost.dr=1.0;
 G.PPhost.dt=1.0;
