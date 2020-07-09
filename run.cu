@@ -27,7 +27,7 @@ void AllParamsHost::set(){
   //PPhost.setUnits();
   sprintf(im3DHost.drop_dir, "%s", PPhost.drop_dir);
 
-  if(PPhost.stencilFixed && PPhost.stencilInterpWidth%2) printf("Warning: stencil Width is Odd and stincil position is Fixed. Is it ok?\n");
+  if(PPhost.stencilFixed && PPhost.stencilInterpWidth%2) printf("Warning: stencil Width is Odd and stencil position is Fixed. Is it ok?\n");
 
   PPhost.setupUnits();
 

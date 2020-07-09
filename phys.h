@@ -26,7 +26,8 @@ static void _mkdir(const char *dir) {
 }
 
 struct InitPars{
-  ftype uDragX,uDragY,u0,beta0,r0,T0;
+  ftype uDragX,uDragY,uDragZ,u0,beta0,r0,T0;
+  int shearWaveDir; 
   int planeTVG;
 };
 
