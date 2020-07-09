@@ -27,6 +27,7 @@ static void _mkdir(const char *dir) {
 
 struct InitPars{
   ftype uDragX,uDragY,uDragZ,u0,beta0,r0,T0;
+  ftype A0,rho0;
   int shearWaveDir; 
   int planeTVG;
 };
@@ -48,6 +49,7 @@ struct PhysPars{
   int stencilInterpWidth;
   int stencilFixed;
   int RegOrder;
+  int EquilibriumOrder, IsothermalRelaxation;
   InitPars initial;
 
   void set_drop_dir(std::string dir) {
@@ -72,6 +74,11 @@ struct PhysPars{
     stencilFixed=0;
     RegOrder=-1;
     fixedTemperature=0;
+    EquilibriumOrder = 2;
+    IsothermalRelaxation=1;
+    #ifdef NON_ISOTHERMAL_RELAXATION
+    IsothermalRelaxation=0;
+    #endif
   }
   void MallocData();
   void setCell(int val, int x,int y);

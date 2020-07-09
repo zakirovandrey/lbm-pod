@@ -22,6 +22,7 @@ void init(){
   cuTimer init_timer;
   //fill<<<dim3(Nx,Ny),Nz>>>( [] __device__(int ix, int iy,int iz) {return blank_mat(ix,iy,iz);} );
   fill<<<dim3(Nx,Ny),Nz>>>( [] __device__(int ix, int iy,int iz) {
+     //return sinTemperature(ix,iy,iz);
      return shear_wave(ix,iy,iz);
      //return vortex_mat(ix,iy,iz);
      //return TGV_mat(ix,iy,iz);

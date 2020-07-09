@@ -128,6 +128,31 @@ __device__ inline std::pair<ftype, ftype4> shear_wave(int ix, int iy, int iz){
   return std::make_pair(rho, make_ftype4(vx,vy,vz,T));
 };
 
+__device__ inline std::pair<ftype, ftype4> sinTemperature(int ix, int iy, int iz){
+  const ftype T0 = PPdev.initial.T0;
+  const ftype udragX = PPdev.initial.uDragX;
+  const ftype udragY = PPdev.initial.uDragY;
+  const ftype udragZ = PPdev.initial.uDragZ;
+
+  ftype vx=0.0,vy=0,vz=0;
+  ftype rho=PPdev.initial.rho0;
+  
+  if(PPdev.initial.shearWaveDir==1) rho+= PPdev.initial.A0*sin(2*M_PI* ix       /Nx); else
+  if(PPdev.initial.shearWaveDir==2) rho+= PPdev.initial.A0*sin(2*M_PI*(ix+iy   )/Nx); else
+  if(PPdev.initial.shearWaveDir==3) rho+= PPdev.initial.A0*sin(2*M_PI*(ix+iy+iz)/Nx);
+
+  const ftype gamma = double(DIM+2)/DIM;
+  const ftype press = PPdev.initial.rho0*T0;
+  ftype T = press/rho;
+
+  rho*= PPdev.RhoUnitConv;
+  vx*= PPdev.VelUnitConv;
+  vy*= PPdev.VelUnitConv;
+  vz*= PPdev.VelUnitConv;
+  T*= PPdev.TempUnitConv;
+
+  return std::make_pair(rho, make_ftype4(vx,vy,vz,T));
+};
 
 
 
