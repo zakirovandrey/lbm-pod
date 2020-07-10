@@ -11,8 +11,8 @@ constexpr const int3 _e[QN] = {
 
 constexpr const ftype cs2 = 1./3.;
 const ftype TLat=cs2;
-constexpr ftype W0get(const ftype Tv) { return 1./2.; }
-constexpr ftype W1get(const ftype Tv) { return 1./8.; }
+constexpr ftype W0get(const ftype Tv) { return 1./2.*cs2; }
+constexpr ftype W1get(const ftype Tv) { return 1-2*cs2; }
 constexpr ftype W2get(const ftype Tv) { return 0; }
 
 const ftype Tmin = 0;
