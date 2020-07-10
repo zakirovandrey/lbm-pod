@@ -15,7 +15,7 @@ struct FullIntegrals{
   double mass;
   double3 momentum;
   double Energy, kinEn, Enstropy, Entropy;
-  long long int MaxVelocity;
+  long long int MaxVelocity, MaxTemperature;
 };
 __managed__ FullIntegrals TotMoments;
 __global__ void total_moments( FullIntegrals& totM );
@@ -105,7 +105,8 @@ __global__ void total_moments( FullIntegrals& totMom ){
   atomicAdd(&totMom.kinEn     , rho*dot(vel,vel)/2 );
   atomicAdd(&totMom.Enstropy  , rho*dot(vorticity,vorticity)/2 );
   atomicAdd(&totMom.Entropy   , entropy );
-  atomicMax(&totMom.MaxVelocity, __double_as_longlong(sqrt(dot(vel,vel))) );
+  atomicMax(&totMom.MaxVelocity   , __double_as_longlong(sqrt(dot(vel,vel))) );
+  atomicMax(&totMom.MaxTemperature, __double_as_longlong(T) );
 }
 
 inline void print_diagnostics() {
@@ -113,8 +114,8 @@ inline void print_diagnostics() {
   total_moments<<<dim3(Nx,Ny),Nz>>>(TotMoments); cudaDeviceSynchronize(); CHECK_ERROR( cudaGetLastError() );
   printf("Total Conservations: Mass %.15f Momentum( %.12f %.12f %.12f ), M2 %.12f\n",
                   TotMoments.mass, TotMoments.momentum.x, TotMoments.momentum.y, TotMoments.momentum.z, TotMoments.Energy );
-  printf("Total Characteristics: KineticEnergy: %.15f Enstropy: %.15f Entropy: %.15f MaxVelocity: %.15f\n",
-                  TotMoments.kinEn, TotMoments.Enstropy, TotMoments.Entropy, *((double*)&(TotMoments.MaxVelocity)) );
+  printf("Total Characteristics: KineticEnergy: %.15f Enstropy: %.15f Entropy: %.15f MaxVelocity: %.15f MaxTemperature: %.15f\n",
+                  TotMoments.kinEn, TotMoments.Enstropy, TotMoments.Entropy, *((double*)&(TotMoments.MaxVelocity)), *((double*)&(TotMoments.MaxTemperature)) );
 }
 
 inline void debug_print(){
