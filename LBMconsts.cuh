@@ -16,15 +16,16 @@ constexpr const ftype dz=1.0;
 constexpr const ftype dt=1.0;
 
 //#define D3Q125_POD
-//#define D3Q15_POD
+#define D3Q39_POD
 //#define D3Q27_EXP_POD
 //#define D3Q27_POD
 //#define D3Q19_POD
+//#define D3Q15_POD
 //#define D2Q36_POD
 //#define D2Q25_POD
 //#define D2Q17_POD
 //#define D2Q16_POD
-#define D2Q12_POD
+//#define D2Q12_POD
 //#define D2Q9_POD
 //#define D2Q7_POD
 //#define D2Q6_POD
@@ -73,6 +74,8 @@ template<int B, int ...Btail> constexpr void debug_consts_assert() { static_asse
 #elif defined D1Q9
   #include "D1Q9_USUAL_consts.cuh"
 
+#elif defined D3Q39_POD
+  #include "D3Q39_POD_consts.cuh"
 #elif defined D3Q27_EXP_POD
   #include "D3Q27_EXP_POD_consts.cuh"
 #elif defined D3Q125_POD
