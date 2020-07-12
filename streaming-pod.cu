@@ -77,10 +77,12 @@ template<int RegOrder=-1> __global__ __launch_bounds__(LBMconsts::Qn) void  stre
     ftype4 gauge = make_ftype4(vel.x, vel.y, vel.z, sqrt(T/TLat));
 
     __syncthreads();
-    Mm->init(gauge);
-    __syncthreads();
-    Mm->inverse();
-    __syncthreads();
+    if(RegOrder<0) { 
+      Mm->init(gauge);
+      __syncthreads();
+      Mm->inverse();
+      __syncthreads();
+    }
     /* Mm0->init(make_ftype4(0,0,0,1));
       __syncthreads();
       Mm0->inverse();
