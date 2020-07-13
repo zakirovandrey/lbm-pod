@@ -1,6 +1,6 @@
 #define DIM 3
-#define QN 27
-#define QN_IN_DIM 216   // QN*2^DIM
+#define QN 15
+#define QN_IN_DIM 120   // QN*2^DIM
 constexpr const int3 _e[QN] = {
  { 0, 0, 0},
  { 1, 0, 0}, { 0, 1, 0}, { 0, 0, 1}, {-1, 0, 0}, { 0,-1, 0}, { 0, 0,-1},
