@@ -7,9 +7,8 @@ const ftype Dim=3;
 const ftype Tmin=0;
 const ftype Tmax=TLat*10;
 
-//strange_coeff = 0.8883588741731
-const ftype ec1=0.8883588741731*sprout::math::sqrt(5.0+sprout::math::sqrt(10.));
-const ftype ec2=0.8883588741731*sprout::math::sqrt(5.0-sprout::math::sqrt(10.));
+const ftype ec1=sprout::math::sqrt(3.0);
+const ftype ec2=sprout::math::sqrt(3.0);
 const ftype ec1d=ec1*ec1;
 const ftype ec2d=ec2*ec2;
 constexpr const ftype3 _ef[QN] = {
