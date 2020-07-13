@@ -21,6 +21,7 @@ constexpr const ftype dt=1.0;
 //#define D3Q27_POD
 //#define D3Q19_POD
 #define D3Q15_POD
+//#define D3Q13_POD
 //#define D2Q36_POD
 //#define D2Q25_POD
 //#define D2Q17_POD
@@ -29,6 +30,7 @@ constexpr const ftype dt=1.0;
 //#define D2Q9_POD
 //#define D2Q7_POD
 //#define D2Q6_POD
+//#define D2Q5_POD
 //#define D1Q6_POD
 //#define D1Q5_POD
 //#define D1Q3_POD
@@ -44,6 +46,7 @@ constexpr const ftype dt=1.0;
 //#define D2Q9
 
 //#define D3Q19
+//#define D3Q13
 // #define D1Q9
 // #define D1Q7
 // #define D1Q5
@@ -78,6 +81,8 @@ template<int B, int ...Btail> constexpr void debug_consts_assert() { static_asse
   #include "D3Q39_POD_consts.cuh"
 #elif defined D3Q27_EXP_POD
   #include "D3Q27_EXP_POD_consts.cuh"
+#elif defined D3Q13_POD
+  #include "D3Q13_POD_consts.cuh"
 #elif defined D3Q125_POD
   #include "D3Q125_POD_consts.cuh"
 #elif defined D3Q27_POD
@@ -102,6 +107,8 @@ template<int B, int ...Btail> constexpr void debug_consts_assert() { static_asse
   #include "D2Q7_POD_consts.cuh"
 #elif defined D2Q6_POD
   #include "D2Q6_POD_consts.cuh"
+#elif defined D2Q5_POD
+  #include "D2Q5_POD_consts.cuh"
 #elif defined D1Q5_POD
   #include "D1Q5_POD_consts.cuh"
 #elif defined D1Q6_POD
@@ -127,8 +134,8 @@ template<int B, int ...Btail> constexpr void debug_consts_assert() { static_asse
 
 #elif defined D3Q19
   #include "D3Q19_USUAL_consts.cuh"
-#elif defined D3Q13
-  #include "D3Q13_USUAL_consts.cuh"
+#elif defined D3Q15
+  #include "D3Q15_USUAL_consts.cuh"
 #elif defined D2Q5
   #include "D2Q5_USUAL_consts.cuh"
 #elif defined D2Q9
