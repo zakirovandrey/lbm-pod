@@ -30,6 +30,7 @@ constexpr const ftype dt=1.0;
 //#define D2Q9_POD
 //#define D2Q7_POD
 //#define D2Q6_POD
+//#define D2Q5_POD
 //#define D1Q6_POD
 //#define D1Q5_POD
 //#define D1Q3_POD
@@ -106,6 +107,8 @@ template<int B, int ...Btail> constexpr void debug_consts_assert() { static_asse
   #include "D2Q7_POD_consts.cuh"
 #elif defined D2Q6_POD
   #include "D2Q6_POD_consts.cuh"
+#elif defined D2Q5_POD
+  #include "D2Q5_POD_consts.cuh"
 #elif defined D1Q5_POD
   #include "D1Q5_POD_consts.cuh"
 #elif defined D1Q6_POD
