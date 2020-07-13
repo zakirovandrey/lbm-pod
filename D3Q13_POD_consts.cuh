@@ -13,10 +13,9 @@ const ftype ec1d=ec1*ec1;
 const ftype ec2d=ec2*ec2;
 constexpr const ftype3 _ef[QN] = {
   {0   , 0   , 0 },
-  {+ec1, +ec2, 0 }, {+ec1, 0, +ec2}, {0, +ec1, +ec2 },
-  {+ec1, -ec2, 0 }, {+ec1, 0, -ec2}, {0, +ec1, -ec2 },
-  {-ec1, +ec2, 0 }, {-ec1, 0, +ec2}, {0, -ec1, +ec2 },
-  {-ec1, -ec2, 0 }, {-ec1, 0, -ec2}, {0, -ec1, -ec2 },
+  {+ec1, +ec2, 0 }, {+ec1, -ec2, 0 }, {-ec1, +ec2, 0 }, {-ec1, -ec2, 0 }, 
+  {0, +ec1, +ec2 }, {0, +ec1, -ec2 }, {-ec1, +ec2, 0 }, {0, -ec1, -ec2 }, 
+  {+ec2, 0, +ec1 }, {-ec2, 0, +ec1 }, {+ec2, 0, -ec1 }, {-ec2, 0, -ec1 },
 };
 constexpr const ftype cs2 = TLat;
 
