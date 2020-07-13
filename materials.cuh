@@ -145,6 +145,8 @@ __device__ inline std::pair<ftype, ftype4> sinTemperature(int ix, int iy, int iz
   const ftype press = PPdev.initial.rho0*T0;
   ftype T = press/rho;
 
+  vx+= udragX; vy+= udragY; vz+= udragZ;
+
   rho*= PPdev.RhoUnitConv;
   vx*= PPdev.VelUnitConv;
   vy*= PPdev.VelUnitConv;

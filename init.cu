@@ -30,7 +30,7 @@ void init(){
   } );
   cudaDeviceSynchronize(); CHECK_ERROR( cudaGetLastError() );
   printf("\n");
-  printf("TLat=%g\n",LBMconsts::TLat);
+  printf("TLat=%16.9g\n\n",LBMconsts::TLat);
 
   printf("Initialization time: %.2f ms\n", init_timer.gettime());
   
@@ -89,5 +89,6 @@ void PhysPars::setupUnits(){
   printf("Density Units Converstion Coeff = %g\n", RhoUnitConv);
   printf("Velocity Units Converstion Coeff = %g\n", VelUnitConv);
   printf("Temperature Units Converstion Coeff = %g\n", TempUnitConv);
+  printf("Viscosity Units Converstion Coeff = %g\n", ViscUnitConv);
   printf("Tau relaxation = %g\n", tau);
 }
