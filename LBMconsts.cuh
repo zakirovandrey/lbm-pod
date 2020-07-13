@@ -16,11 +16,11 @@ constexpr const ftype dz=1.0;
 constexpr const ftype dt=1.0;
 
 //#define D3Q125_POD
-#define D3Q39_POD
+//#define D3Q39_POD
 //#define D3Q27_EXP_POD
 //#define D3Q27_POD
 //#define D3Q19_POD
-//#define D3Q15_POD
+#define D3Q15_POD
 //#define D3Q13_POD
 //#define D2Q36_POD
 //#define D2Q25_POD
