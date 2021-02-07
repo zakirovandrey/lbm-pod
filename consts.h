@@ -19,6 +19,7 @@ typedef float ftype;
 typedef double ftype;
 #endif
 
+//#define EXTENDED_EQUILIBRIUM
 
 static int CudaDevs;
 

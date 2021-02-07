@@ -303,6 +303,7 @@ idle_func_calcNdrop<floatT4im> icalcNdrop;
 
 #include<curand.h>
 #include<curand_kernel.h>
+
 __global__ void init_rand(curandState *states, float* randArr) {
   unsigned int tid = threadIdx.x + blockDim.x * blockIdx.x;
   curand_init(1234, tid, 0, &states[tid]);  //  Initialize CURAND

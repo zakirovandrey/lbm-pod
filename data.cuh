@@ -6,7 +6,7 @@ struct Cell{
   ftype3 vel;
   ftype T;
   int Niter;
-  __device__ static void calcEq(ftype feq[Qn], const ftype Rho, const ftype3 Velocity, const ftype Tempr);
+  __device__ static void calcEq(ftype feq[Qn], const ftype Rho, const ftype3 Velocity, const ftype Tempr, const ftype3 difQ);
   __host__ __device__ void operator=(const ftype v){
     for(int iq=0;iq<Qn;iq++) f[iq]=v;
   }

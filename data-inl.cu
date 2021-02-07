@@ -1,5 +1,5 @@
 #include "phys.h"
-__device__ inline void Cell::calcEq(ftype feq[Qn], const ftype Rho, const ftype3 Velocity, const ftype Tempr){
+__device__ inline void Cell::calcEq(ftype feq[Qn], const ftype Rho, const ftype3 Velocity, const ftype Tempr, const ftype3 _difQ={0,0,0}){
   using namespace LBMconsts;
   const ftype rho = Rho;
   ftype3 u = Velocity;
@@ -38,6 +38,30 @@ __device__ inline void Cell::calcEq(ftype feq[Qn], const ftype Rho, const ftype3
                                   );
     feq[i] = w[i]*rho*mxw;
   }
+  #ifdef EXTENDED_EQUILIBRIUM
+  #ifndef D3Q27
+  #error Extended equilibrium works only for D3Q27 now
+  #endif
+  const ftype lx=1,ly=1,lz=1;
+  const ftype3 dl = make_ftype3(1./lx,1./ly,1./lz);
+  const ftype R=1;
+  if(PPdev.IsothermalRelaxation) Tcur=cs2; else Tcur=Tempr;
+  const ftype T = Tcur;
+  ftype3 P = make_ftype3(R*T)+u*u;
+  const ftype3 difQ = _difQ;
+  const ftype dtau = PPdev.dtau;
+  P += (2 - dtau)/(2*rho*dtau) * difQ;
+  const ftype3 psi0 = make_ftype3(1)-P*dl*dl;
+  const ftype3 psiP = 0.5*( u*dl+P*dl*dl);
+  const ftype3 psiM = 0.5*(-u*dl+P*dl*dl);
+  const ftype xfactors[3] = {psiM.x,psi0.x,psiP.x};
+  const ftype yfactors[3] = {psiM.y,psi0.y,psiP.y};
+  const ftype zfactors[3] = {psiM.z,psi0.z,psiP.z};
+  for(int i=0; i<Qn; i++) {
+    const ftype factor = xfactors[e[i].x+1]*yfactors[e[i].y+1]*zfactors[e[i].z+1];
+    feq[i] = rho*factor;
+  }
+  #endif
 }
 /*__host__ __device__ inline void Cell::calcEq(ftype feq[Qn], const ftype Rho, const ftype3 Velocity, const ftype Tempr){
   using namespace LBMconsts;

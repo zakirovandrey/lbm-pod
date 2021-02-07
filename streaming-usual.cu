@@ -41,7 +41,21 @@ template<int RO=-1> __global__ __launch_bounds__(LBMconsts::Qn) void  streaming_
   T = T/Vrho.w - dot(Vel,Vel);
   T/= DIM;
 
-  Cell::calcEq(feq, Vrho.w, Vel, T);
+  ftype3 Qm=make_ftype3(0,0,0);
+  ftype3 Qp=make_ftype3(0,0,0);
+  const ftype R=1;
+  const ftype lx=1,ly=1,lz=1;
+  Cell ncell;
+  ncell = pars.data.get_cell(ild, (ix-1+Nx)%Nx,iy,iz); Qm.x = ncell.rho*ncell.vel.x*(lx*lx - 3*R*ncell.T-ncell.vel.x*ncell.vel.x);
+  ncell = pars.data.get_cell(ild, (ix+1   )%Nx,iy,iz); Qp.x = ncell.rho*ncell.vel.x*(lx*lx - 3*R*ncell.T-ncell.vel.x*ncell.vel.x);
+  ncell = pars.data.get_cell(ild, ix,(iy-1+Ny)%Ny,iz); Qm.y = ncell.rho*ncell.vel.y*(ly*ly - 3*R*ncell.T-ncell.vel.y*ncell.vel.y);
+  ncell = pars.data.get_cell(ild, ix,(iy+1   )%Ny,iz); Qp.y = ncell.rho*ncell.vel.y*(ly*ly - 3*R*ncell.T-ncell.vel.y*ncell.vel.y);
+  ncell = pars.data.get_cell(ild, ix,iy,(iz-1+Nz)%Nz); Qm.z = ncell.rho*ncell.vel.z*(lz*lz - 3*R*ncell.T-ncell.vel.z*ncell.vel.z);
+  ncell = pars.data.get_cell(ild, ix,iy,(iz+1   )%Nz); Qp.z = ncell.rho*ncell.vel.z*(lz*lz - 3*R*ncell.T-ncell.vel.z*ncell.vel.z);
+
+  const ftype3 difQ = 0.5*(Qp-Qm);
+
+  Cell::calcEq(feq, Vrho.w, Vel, T, difQ);
   collision(fnew,feq);
 
   cell.rho = 0;
