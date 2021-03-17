@@ -12,37 +12,40 @@ GCC  ?= g++
 endif
 endif
 
-ifeq ($(ARCH),k60)
+ifeq ($(shell hostname),k60)
 NVCC := nvcc -std=c++11 -ccbin $(GCC) -O3 -I/common/NVIDIA_CUDA-10.0_Samples/common/inc/ -I./
 GENCODE_SM := -arch=sm_70
-else ifeq ($(ARCH),k100)
+else ifeq ($(shell hostname),k100)
 NVCC := /common/cuda-6.5/bin/nvcc -ccbin $(GCC) -O3 
 GENCODE_SM := -arch=sm_20
-else ifeq ($(ARCH),D)
+else ifeq ($(shell hostname),D)
 NVCC := /home/zakirov/cuda-7.5/bin/nvcc -ccbin $(GCC) -O3 -g 
 GENCODE_SM := -arch=sm_35
-else ifeq ($(ARCH),photon)
+else ifeq ($(shell hostname),photon)
 NVCC := /mnt/D/home/zakirov/cuda-7.5/bin/nvcc -ccbin $(GCC) -O3 
 GENCODE_SM := -arch=sm_50
-else ifeq ($(ARCH),supermic)
+else ifeq ($(shell hostname),supermic.intranet.kintech.ru)
 NVCC := /usr/local/cuda/bin/nvcc -ccbin $(GCC) -O3 -std=c++14 -g -I/usr/local/cuda/include/ -I./
 GENCODE_SM := -arch=sm_61
-else ifeq ($(ARCH),plasma)
+else ifeq ($(shell hostname),plasma)
 NVCC := nvcc -ccbin $(GCC) -O3 -std=c++14 --expt-relaxed-constexpr -g -I/usr/local/cuda/include/ -I./ -I./Sprout/
 GENCODE_SM := -arch=sm_52
-else ifeq ($(ARCH),zu)
+else ifeq ($(shell hostname),Zu)
 GCC  := g++-7
 NVCC := nvcc -ccbin $(GCC) -O3 -std=c++14 --expt-relaxed-constexpr -g -I./ -I./Sprout/
 GENCODE_SM := -arch=sm_52
-else ifeq ($(ARCH),ion)
+else ifeq ($(shell hostname),positron)
+GCC  := g++
+NVCC := nvcc -ccbin $(GCC) -O3 -std=c++14 --expt-relaxed-constexpr -g -I./ -I./Sprout/
+else ifeq ($(shell hostname),ion)
 NVCC := /mnt/D/home/zakirov/cuda-7.5/bin/nvcc -ccbin $(GCC) -O3 
 GENCODE_SM := -arch=sm_50
-else ifeq ($(ARCH),kiae)
+else ifeq ($(shell hostname),fjord1.g4.computing.kiae.ru)
 NVCC := nvcc -ccbin $(GCC) -O3
 GENCODE_SM := -arch=sm_37
 NOG=e1
 else
-NVCC := nvcc -ccbin $(GCC) -O3  
+NVCC := nvcc -ccbin $(GCC) -O3
 GENCODE_SM := -arch=sm_61
 endif 
 
